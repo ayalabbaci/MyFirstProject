@@ -1,0 +1,97 @@
+/* Header.css */
+/* Header.css */
+
+
+@import "tailwindcss";
+.navbar-profil {
+  position: relative;
+  width: 100px;
+}
+
+.nav-profile-dropdown {
+  position: absolute;
+  top: 100%; /* يجعل القائمة تظهر أسفل الزر مباشرة */
+  right: 0;
+  display: none;
+  z-index: 1000;
+  background-color: #fff2ef;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid tomato;
+  outline: 2px solid white;
+  list-style: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar-profil:hover .nav-profile-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-profile-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 0;
+  color: #333;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.nav-profile-dropdown li:hover {
+  color:tomato;
+  border-radius: 4px;
+}
+
+
+
+@media (max-width: 1050px) {
+ 
+    .navbar .logo {
+      width: 60px;
+    }
+    .navbar-menu {
+      gap: 20px;
+      font-size: 17px;
+    }
+    .navbar-right {
+      gap: 30px;
+    }
+  
+    .navbar-right button {
+      padding: 8px 25px;
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    
+    .navbar .logo {
+      width: 50px;
+    }
+    .navbar-menu {
+      gap: 15px;
+      font-size: 16px;
+    }
+    .navbar-right {
+      gap: 20px;
+    }
+   
+    .navbar-right button {
+      padding: 7px 20px;
+      font-size: 15px;
+    }
+  } 
+  
+  /* Fix for screens under 570px */
+  @media (max-width: 750px) {
+    
+    .navbar-menu{
+      display:none;
+    }
+   
+    
+}

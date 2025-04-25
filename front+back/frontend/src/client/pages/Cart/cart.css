@@ -1,0 +1,92 @@
+.cart-items-title{
+    font-size:max(2vw,12px)
+}
+.cross{
+  height:50px;
+  width:40px;
+  background-color: tomato;
+  border-radius: 10px;
+  text-align:center;
+}
+.cart{
+    margin:max(5vw, 50px);
+}
+.cart-bottom{
+    gap:max(12vw, 20px);
+}
+.cart-total hr{
+    margin:10px 0px;
+}
+.cart-total button{
+    border:none;
+    color:white;
+    background-color:rgb(228, 12, 12);
+    padding:10px 0px;
+    border-radius:4px;
+    cursor: pointer;
+    width:max(15vw, 200px);
+}
+.cart-promocode-button{
+    border:none;
+    color:white;
+    background-color:black;
+    padding:10px 0px;
+    border-radius:4px;
+    cursor: pointer;
+    width:max(10vw, 150px);
+}
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  .popup-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .popup-button {
+    padding: 10px 20px;
+    background-color: tomato;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .popup-button:hover {
+    background-color: #45a049;
+  }
+  
+@media (max-width: 750px) {
+    .cart-bottom{
+        flex-direction:column-reverse;
+    }
+   
+   .cart-items-title  .total{
+    margin-left:-18px;
+   }  
+    
+    .cart-promocode{
+       justify-content:start;
+    }
+   
+}
