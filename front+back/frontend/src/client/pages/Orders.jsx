@@ -1,21 +1,17 @@
 import axios from 'axios';
 import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../context/StoreContext';
-import { TailSpin } from 'react-loader-spinner'; // Optional: Loader component to display while loading
+import { TailSpin } from 'react-loader-spinner'; // Loader component
 
 const Orders = () => {
-  const { userId, token } = useContext(StoreContext); // Get the token from the context
-  const [orders, setOrders] = useState([]); // Store the orders in local state
-  const [loading, setLoading] = useState(true); // To determine whether data is loading
-  const [error, setError] = useState(null); // To store any errors if they occur
+  const { userId, token } = useContext(StoreContext);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-   
     const fetchOrders = async () => {
       try {
-        
-
-        // Check if the userId or token are missing
         if (!userId || !token) {
           setError("User not authenticated.");
           setLoading(false);
@@ -24,43 +20,39 @@ const Orders = () => {
 
         const res = await axios.get(`http://localhost:4000/api/orders/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Add the token to the header
+            Authorization: `Bearer ${token}`,
           },
         });
 
-       
-
-        // Check the API response
         if (res.data.success) {
-          setOrders(res.data.orders); // Store the data in the local state
+          setOrders(res.data.orders);
         } else {
           setError("Failed to fetch orders.");
         }
 
-        setLoading(false); // Set loading state to false after receiving the response
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
         setError("An error occurred while fetching orders.");
-        setLoading(false); // Set loading state to false in case of an error
+        setLoading(false);
       }
     };
 
-    // Fetch orders if userId and token are available
     if (userId && token) {
       fetchOrders();
     }
-  }, [userId, token]); // Execute this effect when userId or token change
+  }, [userId, token]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <TailSpin color="#FF6347" height={100} width={100} /> {/* Loader component */}
+        <TailSpin color="#FF6347" height={100} width={100} />
       </div>
     );
   }
 
   if (error) {
-    return <p className="text-red-500">{error}</p>; // Display error message if an error occurred
+    return <p className="text-red-500">{error}</p>;
   }
 
   return (
@@ -96,6 +88,21 @@ const Orders = () => {
               <p className="mt-2 text-gray-700">Address: {order.street}</p>
               <p className="text-gray-700">Delivery Fee: {order.deliveryFee} DA</p>
               <p className="text-gray-700 font-bold">Total: {order.total} DA</p>
+
+              {/* ✨ عرض حالة الطلب هنا ✨ */}
+              <p className="mt-2 text-gray-800">
+                Status: 
+                <span className={`ml-2 font-semibold ${
+                  order.status === 'pending' ? 'text-yellow-500' :
+                  order.status === 'in-progress' ? 'text-blue-500' :
+                  order.status === 'completed' ? 'text-green-600' :
+                  order.status === 'canceled' ? 'text-red-500' :
+                  'text-gray-500'
+                }`}>
+                  {order.status}
+                </span>
+              </p>
+
               <p className="text-gray-500 mt-1 text-sm">
                 Date: {new Date(order.date).toLocaleString()}
               </p>
