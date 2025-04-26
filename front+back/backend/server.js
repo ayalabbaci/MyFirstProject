@@ -5,7 +5,7 @@ import foodRouter from "./routes/foodRoute.js";
 import UserRoute from "./routes/UserRoute.js";
 import AdminRoute from "./routes/AdminRoute.js";
 import cartRouter from './routes/cartRoute.js';
-import OrderRouter from './routes/OrdersRoute.js'; // ✅ تأكدت أن اسم الملف مطابق تمامًا
+import router from './routes/OrdersRoute.js'; // ✅ تأكدت أن اسم الملف مطابق تمامًا
 
 import 'dotenv/config';
 
@@ -28,7 +28,7 @@ app.use("/api/food", foodRouter);
 app.use("/api/user", UserRoute);
 app.use("/api/admin", AdminRoute);
 app.use("/api/cart", cartRouter);
-app.use("/api/orders", OrderRouter); // يجب أن يتطابق اسم الـ Router هنا مع اسم ملف الـ Router
+app.use("/api/orders", router); // يجب أن يتطابق اسم الـ Router هنا مع اسم ملف الـ Router
 
 // Root test route
 app.get("/", (req, res) => {

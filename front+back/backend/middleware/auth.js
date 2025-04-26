@@ -9,13 +9,12 @@ const authMiddleware = async (req, res, next) => {
 
     try {
         const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.body.userId = token_decode.id; // إضافة الـ userId في body
+        req.user = { id: token_decode.id }; // إضافة الـ userId في req.user
         next(); // المتابعة للـ next middleware أو الـ route handler
     } catch (error) {
-        console.log(error);
+        console.log("❌ Token Error: ", error);
         return res.status(401).json({ success: false, message: "Invalid or Expired Token" });
     }
 };
 
-export default authMiddleware; // تصدير باستخدام export default
-
+export default authMiddleware;

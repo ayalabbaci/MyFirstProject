@@ -1,5 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+ // ✅ تم استيراد jwt-decode
 
 export const StoreContext = createContext(null);
 
@@ -9,7 +11,7 @@ const StoreContextProvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [role, setRole] = useState(localStorage.getItem("role") || "client");
   const [name, setName] = useState(localStorage.getItem("name") || "");
-  const [userId, setUserId] = useState(localStorage.getItem("userId") || ""); // هنا أضفنا الـ userId
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || ""); // ✅ موجود أصلاً
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,13 +25,16 @@ const StoreContextProvider = (props) => {
       const storedToken = localStorage.getItem("token");
       const storedName = localStorage.getItem("name");
       const storedRole = localStorage.getItem("role");
-      const storedUserId = localStorage.getItem("userId"); // جلب الـ userId من الـ localStorage
 
       if (storedToken) {
         setToken(storedToken);
-      }
-      if (storedUserId) {
-        setUserId(storedUserId); // تعيين الـ userId في الحالة
+        try {
+          const decoded = jwtDecode(storedToken);
+          setUserId(decoded.id); // ✅ تعيين userId من التوكن
+          localStorage.setItem("userId", decoded.id); // ✅ تخزينه في localStorage
+        } catch (err) {
+          console.error("خطأ في تحليل التوكن:", err);
+        }
       }
 
       if (storedName) setName(storedName);
@@ -121,33 +126,39 @@ const StoreContextProvider = (props) => {
     name,
     setName,
     setRole,
-    userId, // هنا تم إضافة الـ userId
+    userId,     // ✅ موجود
+    setUserId,  // ✅ تمت إضافته
   };
 
-  if (loading) return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "white",
-    }}>
-      <div style={{
-        width: "60px",
-        height: "60px",
-        border: "6px solid #ccc",
-        borderTop: "6px solid red",
-        borderRadius: "50%",
-        animation: "spin 1s linear infinite"
-      }} />
-      <style> {
-        `@keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }`
-      }</style>
-    </div>
-  );
+  if (loading)
+    return (
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+        }}
+      >
+        <div
+          style={{
+            width: "60px",
+            height: "60px",
+            border: "6px solid #ccc",
+            borderTop: "6px solid red",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        />
+        <style>
+          {`@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }`}
+        </style>
+      </div>
+    );
 
   if (error) return <div>{error}</div>;
 

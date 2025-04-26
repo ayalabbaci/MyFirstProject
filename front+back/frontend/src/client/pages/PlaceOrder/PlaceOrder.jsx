@@ -1,20 +1,22 @@
 import React, { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 
 const PlaceOrder = () => {
   const location = useLocation();
-  const { items, totalPrice, deliveryFee, grandTotal, supplementNote } = location.state;
+  const navigate = useNavigate();
 
-  const { getTotalCartAmount, userEmail, userId } = useContext(StoreContext);
+  const { items, totalPrice, deliveryFee, grandTotal, supplementNote } = location.state;
+  const { userEmail, userId } = useContext(StoreContext);
 
   const [street, setStreet] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to fetch address from coordinates
   const fetchAddressFromCoords = async (lat, lon) => {
@@ -26,7 +28,6 @@ const PlaceOrder = () => {
           lon,
         },
       });
-
       const street = response.data.display_name;
       setStreet(street);
     } catch (error) {
@@ -44,7 +45,7 @@ const PlaceOrder = () => {
           fetchAddressFromCoords(latitude, longitude);
         },
         (error) => {
-          console.error("Could not get location:", error);
+          
           alert("Failed to access your location.");
         }
       );
@@ -53,34 +54,27 @@ const PlaceOrder = () => {
     }
   };
 
-  // Send order confirmation email
-  const sendOrderConfirmationEmail = async () => {
-    try {
-      await axios.post("/send-order-confirmation", {
-        email: userEmail,
-        orderDetails: {
-          firstName,
-          lastName,
-          street,
-          phone,
-          totalAmount: grandTotal,
-        },
-      });
-    } catch (error) {
-      console.error("Error sending email:", error);
+  // Pre-checkout validation
+  const handleProceedToCheckout = () => {
+    // Check that all fields are filled
+    if (!firstName || !lastName || !street || !phone) {
+      alert("Please fill all fields before submitting your order.");
+      return;
     }
+    
+    // Show the confirmation modal
+    setShowConfirmModal(true);
   };
 
   // Handle checkout process
   const handleCheckout = async () => {
-    if (!firstName || !lastName || !street || !phone) {
-      alert("Please fill in all the fields before placing your order.");
-      return;
-    }
-
+    setIsLoading(true);
+    
     try {
-      const response = await axios.post("/api/orders/create", {
-        userId,
+      const token = localStorage.getItem("token");
+      
+      // Create the order data object
+      const orderData = {
         firstName,
         lastName,
         phone,
@@ -89,17 +83,42 @@ const PlaceOrder = () => {
         deliveryFee,
         supplements: supplementNote?.split(",").map((s) => s.trim()) || [],
         items,
-      });
+      };
+      
+      // Add userId only if it's present and not empty
+      if (userId && userId.trim && userId.trim() !== "") {
+        orderData.userId = userId;
+      }
+
+      const response = await axios.post(
+        "/api/orders/create",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.data.success) {
-        sendOrderConfirmationEmail();
-        setOrderSuccess(true);  // Show success modal
+        // Close the confirmation modal first
+        setShowConfirmModal(false);
+        
+        navigate("/orders", {
+          state: {
+            successMessage: "✅ Your order has been successfully placed! Payment will be on delivery.",
+          },
+        });
       } else {
+        setShowConfirmModal(false);
         alert("Failed to place order: " + response.data.message);
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      alert("There was an error placing your order. Please try again.");
+      setShowConfirmModal(false);
+      alert("An error occurred while placing your order. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,7 +138,7 @@ const PlaceOrder = () => {
             <input
               type="text"
               placeholder="Last name"
-              value={lastName} 
+              value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
@@ -193,19 +212,43 @@ const PlaceOrder = () => {
               </div>
             </div>
 
-            <button type="button" className="cart-total-button" onClick={handleCheckout}>
+            <button type="button" className="cart-total-button" onClick={handleProceedToCheckout}>
               PROCEED TO CHECKOUT
             </button>
           </div>
         </div>
       </form>
 
-      {orderSuccess && (
-        <div className="order-modal">
-          <div className="modal-content">
-            <p>Your order has been received!</p>
-            <p>Payment will be made upon delivery.</p>
-            <button onClick={() => setOrderSuccess(false)}>OK</button>
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <div className="confirm-modal-header">
+              <h3>Order Confirmation</h3>
+            </div>
+            <div className="confirm-modal-body">
+              <p>Are you sure you want to place this order?</p>
+              <div className="order-summary-modal">
+                <p>Total Amount: <b>{grandTotal} DA</b></p>
+                <p>Address: {street}</p>
+              </div>
+            </div>
+            <div className="confirm-modal-footer">
+              <button 
+                className="cancel-button" 
+                onClick={() => setShowConfirmModal(false)}
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button 
+                className="confirm-button" 
+                onClick={handleCheckout}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Confirm Order"}
+              </button>
+            </div>
           </div>
         </div>
       )}

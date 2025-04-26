@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/create', authMiddleware, createOrder);
 
 // 🔘 جلب الطلبات حسب المستخدم
-router.get('/user', authMiddleware, getOrdersByUserId);
+router.get('/:userId', authMiddleware, getOrdersByUserId);
 
 // 🔘 جلب كل الطلبات
 router.get('/all', authMiddleware, getAllOrders);

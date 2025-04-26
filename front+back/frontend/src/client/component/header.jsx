@@ -51,7 +51,7 @@ const Header = ({ setShowLogin, isAdmin }) => {
         {/* إذا كان أدمن: زر لوحة التحكم */}
         {isAdmin && (
           <Link to="/admin" className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors">
-            لوحة التحكم
+            Admin Panel
           </Link>
         )}
 
