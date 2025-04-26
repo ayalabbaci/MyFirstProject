@@ -73,19 +73,22 @@ const Header = ({ setShowLogin, isAdmin }) => {
         ) : (
           <div className='relative navbar-profil'>
             <img src={assets.profile_icon} alt="profile" className="cursor-pointer" />
-            <ul className="nav-profile-dropdown">
-              {!isAdmin && (
-                <>
-                 <li>
-  <Link to="/orders">
-    <img src={assets.bag_icon} alt="/orders" /><p className='absolute right-13 top-5 '>Orders</p>
-  </Link>
-</li>
-                  <hr />
-                </>
-              )}
-              <li onClick={logout}><img src={assets.logout_icon} alt="logout" /><p>Logout</p></li>
-            </ul>
+            <ul className="nav-profile-dropdown absolute top-12 right-0 w-max bg-white shadow-lg rounded-lg p-2 space-y-2">
+  {!isAdmin && (
+    <>
+      <li>
+        <Link to="/orders" className="flex items-center p-2 hover:bg-gray-100 rounded-lg">
+          <img src={assets.bag_icon} alt="/orders" className="w-6 h-6 mr-2" />
+          <p className="text-sm">Orders</p>
+        </Link>
+      </li>
+      <hr className="border-t border-gray-200" />
+    </>
+  )}
+  <li onClick={logout} className="flex items-center p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
+    <img src={assets.logout_icon} alt="logout" className="w-6 h-6 mr-0.5 ml-2" />    <p className="text-sm">Logout</p>
+  </li>
+</ul>
           </div>
         )}
       </div>

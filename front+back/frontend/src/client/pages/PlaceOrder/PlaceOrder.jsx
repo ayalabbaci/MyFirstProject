@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const PlaceOrder = () => {
   const location = useLocation();
@@ -18,7 +19,6 @@ const PlaceOrder = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Function to fetch address from coordinates
   const fetchAddressFromCoords = async (lat, lon) => {
     try {
       const response = await axios.get(`https://nominatim.openstreetmap.org/reverse`, {
@@ -32,11 +32,14 @@ const PlaceOrder = () => {
       setStreet(street);
     } catch (error) {
       console.error("Failed to fetch address:", error);
-      alert("Something went wrong while fetching your address.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong while fetching your address.',
+      });
     }
   };
 
-  // Handle using the user's current location
   const handleUseMyLocation = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -45,35 +48,40 @@ const PlaceOrder = () => {
           fetchAddressFromCoords(latitude, longitude);
         },
         (error) => {
-          
-          alert("Failed to access your location.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Location Error',
+            text: 'Failed to access your location.',
+          });
         }
       );
     } else {
-      alert("Geolocation is not supported by your browser.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Unsupported',
+        text: 'Geolocation is not supported by your browser.',
+      });
     }
   };
 
-  // Pre-checkout validation
   const handleProceedToCheckout = () => {
-    // Check that all fields are filled
     if (!firstName || !lastName || !street || !phone) {
-      alert("Please fill all fields before submitting your order.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Fields',
+        text: 'Please fill all fields before submitting your order.',
+      });
       return;
     }
-    
-    // Show the confirmation modal
     setShowConfirmModal(true);
   };
 
-  // Handle checkout process
   const handleCheckout = async () => {
     setIsLoading(true);
-    
+
     try {
       const token = localStorage.getItem("token");
-      
-      // Create the order data object
+
       const orderData = {
         firstName,
         lastName,
@@ -84,8 +92,7 @@ const PlaceOrder = () => {
         supplements: supplementNote?.split(",").map((s) => s.trim()) || [],
         items,
       };
-      
-      // Add userId only if it's present and not empty
+
       if (userId && userId.trim && userId.trim() !== "") {
         orderData.userId = userId;
       }
@@ -101,9 +108,7 @@ const PlaceOrder = () => {
       );
 
       if (response.data.success) {
-        // Close the confirmation modal first
         setShowConfirmModal(false);
-        
         navigate("/orders", {
           state: {
             successMessage: "✅ Your order has been successfully placed! Payment will be on delivery.",
@@ -111,12 +116,20 @@ const PlaceOrder = () => {
         });
       } else {
         setShowConfirmModal(false);
-        alert("Failed to place order: " + response.data.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Order Failed',
+          text: 'Failed to place order: ' + response.data.message,
+        });
       }
     } catch (error) {
       console.error("Error placing order:", error);
       setShowConfirmModal(false);
-      alert("An error occurred while placing your order. Please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while placing your order. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +232,6 @@ const PlaceOrder = () => {
         </div>
       </form>
 
-      {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="modal-overlay">
           <div className="confirm-modal">
@@ -232,17 +244,18 @@ const PlaceOrder = () => {
                 <p>Total Amount: <b>{grandTotal} DA</b></p>
                 <p>Address: {street}</p>
               </div>
+              <p className="text-xl text-lime-500">The payment is cash</p>
             </div>
             <div className="confirm-modal-footer">
-              <button 
-                className="cancel-button" 
+              <button
+                className="cancel-button"
                 onClick={() => setShowConfirmModal(false)}
                 disabled={isLoading}
               >
                 Cancel
               </button>
-              <button 
-                className="confirm-button" 
+              <button
+                className="confirm-button"
                 onClick={handleCheckout}
                 disabled={isLoading}
               >

@@ -92,6 +92,8 @@
     .navbar-menu{
       display:none;
     }
-   
-    
+       .navbar-right p{
+      font-size: 20px;
+      margin-left: 20px;
+       }
 }

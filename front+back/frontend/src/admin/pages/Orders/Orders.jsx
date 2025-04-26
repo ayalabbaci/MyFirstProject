@@ -112,17 +112,73 @@ const Orders = () => {
     </div>
   );
 
+  // Function to render order items in a mobile card view
+  const renderOrderCard = (order) => (
+    <div 
+      key={order._id}
+      className="bg-white rounded-lg shadow mb-4 p-4 cursor-pointer hover:bg-gray-50"
+      onClick={() => setSelectedOrder(order)}
+    >
+      <div className="flex justify-between items-center mb-3">
+        <div>
+          <h3 className="font-semibold">{order.firstName} {order.lastName}</h3>
+          <p className="text-sm text-gray-600">{order.phone}</p>
+        </div>
+        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(order.status)}`}>
+          {order.status}
+        </span>
+      </div>
+      
+      <div className="flex justify-between text-sm mb-3">
+        <span>Total: <b>{order.total} DA</b></span>
+        <span>Delivery: <b>{order.deliveryFee} DA</b></span>
+      </div>
+      
+      <div className="border-t pt-3 flex justify-end">
+        <button
+          onClick={(e) => handleDelete(e, order._id)}
+          className="text-red-600 hover:text-red-900 text-sm px-3 py-1 bg-red-50 rounded"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Orders</h1>
+      
+      {/* Mobile Selected Order View - Only shown when an order is selected on mobile */}
+      {selectedOrder && (
+        <div className="lg:hidden mb-6">
+          <button 
+            onClick={() => setSelectedOrder(null)}
+            className="mb-4 px-4 py-2 bg-gray-200 rounded-md text-gray-700 flex items-center"
+          >
+            ← Back to Orders
+          </button>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Details</h2>
+            <OrderDetails order={selectedOrder} />
+            <OrderStatusChanger
+              order={selectedOrder}
+              notifyClient={notifyClient}
+              setNotifyClient={setNotifyClient}
+              handleChangeStatus={handleChangeStatus}
+            />
+          </div>
+        </div>
+      )}
+      
       <div className="flex flex-col lg:flex-row gap-8">
         
-        {/* Order Details Section */}
-        <div className="w-full lg:w-1/3 order-2 lg:order-1">
+        {/* Order Details Section - Hidden on mobile when no order is selected */}
+        <div className={`w-full lg:w-1/3 order-2 lg:order-1 ${selectedOrder ? 'hidden lg:block' : 'hidden'}`}>
           <div className="bg-white rounded-lg shadow p-6 h-full">
+            <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Details</h2>
             {selectedOrder ? (
               <>
-                <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Details</h2>
                 <OrderDetails order={selectedOrder} />
                 <OrderStatusChanger
                   order={selectedOrder}
@@ -137,10 +193,23 @@ const Orders = () => {
           </div>
         </div>
 
-        {/* Orders Table Section */}
-        <div className="w-full lg:w-2/3 order-1 lg:order-2">
+        {/* Orders Section - Hidden on mobile when an order is selected */}
+        <div className={`w-full lg:w-2/3 order-1 lg:order-2 ${selectedOrder ? 'hidden lg:block' : 'block'}`}>
           <h2 className="text-xl font-semibold text-gray-700 mb-4">All Orders</h2>
-          <div className="overflow-x-auto bg-white rounded-lg shadow">
+          
+          {/* Mobile Card View - Only shown on small screens */}
+          <div className="lg:hidden">
+            {orders.length === 0 ? (
+              <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+                No orders found.
+              </div>
+            ) : (
+              orders.map(order => renderOrderCard(order))
+            )}
+          </div>
+          
+          {/* Desktop Table View - Only shown on large screens */}
+          <div className="hidden lg:block overflow-x-auto bg-white rounded-lg shadow">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -188,7 +257,6 @@ const Orders = () => {
             </table>
           </div>
         </div>
-
       </div>
     </div>
   );
