@@ -2,11 +2,12 @@
     font-size:max(2vw,12px)
 }
 .cross{
-  height:50px;
-  width:40px;
-  background-color: tomato;
-  border-radius: 10px;
+  height:30px;
+  width:30px;
+  background-color: rgb(218, 48, 18);
+  border-radius: 5px;
   text-align:center;
+  color:white
 }
 .cart{
     margin:max(5vw, 50px);

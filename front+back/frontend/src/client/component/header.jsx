@@ -19,7 +19,7 @@ const Header = ({ setShowLogin, isAdmin }) => {
   };
 
   return (
-    <header className="navbar flex items-center justify-between px-10 py-4 bg-white shadow w-full">
+    <header className="navbar flex items-center justify-between px-10 py-1 bg-white shadow w-full">
       {/* Logo */}
       <div>
         <Link to='/'><img src={assets.logo} alt="Logo" className="h-12 logo" /></Link>
@@ -67,18 +67,18 @@ const Header = ({ setShowLogin, isAdmin }) => {
 
         {/* تسجيل الدخول أو تسجيل الخروج */}
         {!token ? (
-          <button onClick={() => setShowLogin(true)} className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors">
+          <button onClick={() => setShowLogin(true)} className="bg-red-600 text-white px-4  rounded-full hover:bg-red-700 transition-colors">
             Sign In/Sign Up
           </button>
         ) : (
           <div className='relative navbar-profil'>
             <img src={assets.profile_icon} alt="profile" className="cursor-pointer" />
-            <ul className="nav-profile-dropdown absolute top-12 right-0 w-max bg-white shadow-lg rounded-lg p-2 space-y-2">
+            <ul className="nav-profile-dropdown">
   {!isAdmin && (
     <>
       <li>
-        <Link to="/orders" className="flex items-center p-2 hover:bg-gray-100 rounded-lg">
-          <img src={assets.bag_icon} alt="/orders" className="w-6 h-6 mr-2" />
+        <Link to="/orders" className=" flex p-2 ">
+          <img src={assets.bag_icon} alt="/orders" className="w-4 h-3 mr-2" />
           <p className="text-sm">Orders</p>
         </Link>
       </li>
@@ -86,7 +86,7 @@ const Header = ({ setShowLogin, isAdmin }) => {
     </>
   )}
   <li onClick={logout} className="flex items-center p-3 hover:bg-gray-100 rounded-lg cursor-pointer">
-    <img src={assets.logout_icon} alt="logout" className="w-6 h-6 mr-0.5 ml-2" />    <p className="text-sm">Logout</p>
+    <img src={assets.logout_icon} alt="logout" className="w-4 h-3 mr-0.5 ml-2" />    <p className="text-sm">Logout</p>
   </li>
 </ul>
           </div>

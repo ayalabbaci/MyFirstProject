@@ -28,7 +28,7 @@ const CartItem = ({ item, cartItems, addToCart, removeFromCart, handleRemoveClic
         />
       </div>
       <p className="total">{Number(item.price) * cartItems[item._id]} DA</p>
-      <p onClick={() => handleRemoveClick(item._id)} className="cross text-3xl cursor-pointer">x</p>
+      <p onClick={() => handleRemoveClick(item._id)} className="cross text-2xl cursor-pointer">x</p>
     </div>
     <hr className="h-0.5 text-gray-400" />
   

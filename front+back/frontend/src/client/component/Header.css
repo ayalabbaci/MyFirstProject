@@ -11,17 +11,17 @@
 .nav-profile-dropdown {
   position: absolute;
   top: 100%; /* يجعل القائمة تظهر أسفل الزر مباشرة */
-  right: 0;
+  right: 20px;
   display: none;
   z-index: 1000;
   background-color: #fff2ef;
-  padding: 10px 15px;
+  padding: 10px 10px;
   border-radius: 8px;
   border: 1px solid tomato;
   outline: 2px solid white;
   list-style: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-width: 160px;
+  min-width: 100px;
   transition: all 0.2s ease-in-out;
 }
 
@@ -34,7 +34,7 @@
 .nav-profile-dropdown li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   cursor: pointer;
   padding: 6px 0;
   color: #333;
