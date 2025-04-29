@@ -5,14 +5,26 @@ import Swal from 'sweetalert2';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notifyClient, setNotifyClient] = useState(true);
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    if (filterStatus === 'all') {
+      setFilteredOrders(orders.filter(order => order.status !== 'completed'));
+    } else if (filterStatus === 'history') {
+      setFilteredOrders(orders.filter(order => order.status === 'completed'));
+    } else {
+      setFilteredOrders(orders.filter(order => order.status === filterStatus));
+    }
+  }, [orders, filterStatus]);
 
   const fetchOrders = async () => {
     try {
@@ -79,10 +91,19 @@ const Orders = () => {
         { status, notifyClient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setOrders(prev => prev.map(order => order._id === orderId ? { ...order, status } : order));
+
+      setOrders(prev => {
+        const updated = prev.map(order => order._id === orderId ? { ...order, status } : order);
+        if (status === 'completed' && filterStatus !== 'history') {
+          return updated.filter(order => order._id !== orderId);
+        }
+        return updated;
+      });
+
       if (selectedOrder?._id === orderId) {
         setSelectedOrder(prev => ({ ...prev, status }));
       }
+
       toast.success(`Order status updated to "${status}"${notifyClient ? ' and client notified' : ''}`);
     } catch (err) {
       console.error(err);
@@ -100,162 +121,94 @@ const Orders = () => {
     return statusClasses[status] || 'bg-gray-100 text-gray-800';
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p className="text-lg text-gray-700">Loading...</p>
-    </div>
-  );
+  const renderFilterButtons = () => {
+    const statuses = ['all', 'pending', 'in-progress', 'completed', 'canceled'];
+    return (
+      <div className="mb-6 flex items-center space-x-4">
+        {statuses.map(status => (
+          <button
+            key={status}
+            onClick={() => setFilterStatus(status)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+              filterStatus === status ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300'
+            }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
-  if (error) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <p className="text-lg text-red-600">{error}</p>
-    </div>
-  );
-
-  // Function to render order items in a mobile card view
-  const renderOrderCard = (order) => (
-    <div 
-      key={order._id}
-      className="bg-white rounded-lg shadow mb-4 p-4 cursor-pointer hover:bg-gray-50"
-      onClick={() => setSelectedOrder(order)}
-    >
-      <div className="flex justify-between items-center mb-3">
-        <div>
-          <h3 className="font-semibold">{order.firstName} {order.lastName}</h3>
-          <p className="text-sm text-gray-600">{order.phone}</p>
-        </div>
-        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(order.status)}`}>
-          {order.status}
-        </span>
-      </div>
-      
-      <div className="flex justify-between text-sm mb-3">
-        <span>Total: <b>{order.total} DA</b></span>
-        <span>Delivery: <b>{order.deliveryFee} DA</b></span>
-      </div>
-      
-      <div className="border-t pt-3 flex justify-end">
-        <button
-          onClick={(e) => handleDelete(e, order._id)}
-          className="text-red-600 hover:text-red-900 text-sm px-3 py-1 bg-red-50 rounded"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><p className="text-lg text-gray-700">Loading...</p></div>;
+  if (error) return <div className="flex items-center justify-center min-h-screen"><p className="text-lg text-red-600">{error}</p></div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Orders</h1>
-      
-      {/* Mobile Selected Order View - Only shown when an order is selected on mobile */}
-      {selectedOrder && (
-        <div className="lg:hidden mb-6">
-          <button 
-            onClick={() => setSelectedOrder(null)}
-            className="mb-4 px-4 py-2 bg-gray-200 rounded-md text-gray-700 flex items-center"
-          >
-            ← Back to Orders
-          </button>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Details</h2>
-            <OrderDetails order={selectedOrder} />
-            <OrderStatusChanger
-              order={selectedOrder}
-              notifyClient={notifyClient}
-              setNotifyClient={setNotifyClient}
-              handleChangeStatus={handleChangeStatus}
-            />
-          </div>
-        </div>
-      )}
-      
-      <div className="flex flex-col lg:flex-row gap-8">
-        
-        {/* Order Details Section - Hidden on mobile when no order is selected */}
-        <div className={`w-full lg:w-1/3 order-2 lg:order-1 ${selectedOrder ? 'hidden lg:block' : 'hidden'}`}>
-          <div className="bg-white rounded-lg shadow p-6 h-full">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Details</h2>
-            {selectedOrder ? (
-              <>
-                <OrderDetails order={selectedOrder} />
-                <OrderStatusChanger
-                  order={selectedOrder}
-                  notifyClient={notifyClient}
-                  setNotifyClient={setNotifyClient}
-                  handleChangeStatus={handleChangeStatus}
-                />
-              </>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Orders</h1>
+        <button
+          onClick={() => setFilterStatus('history')}
+          className={`px-4 py-2 rounded-lg text-red-500 text-sm font-medium border ${
+            filterStatus === 'history' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border-gray-300'
+          }`}
+        >
+          History
+        </button>
+      </div>
+
+      {renderFilterButtons()}
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-xl font-semibold mb-4">All Orders</h2>
+            {filteredOrders.length === 0 ? (
+              <p className="text-center text-gray-500">No orders found.</p>
             ) : (
-              <p className="text-gray-500 text-center">Select an order to view details</p>
+              <div className="space-y-4">
+                {filteredOrders.map(order => (
+                  <div
+                    key={order._id}
+                    onClick={() => setSelectedOrder(order)}
+                    className="cursor-pointer border p-4 rounded-md hover:bg-gray-50 flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="font-medium">{order.firstName} {order.lastName}</p>
+                      <p className="text-sm text-gray-500">{order.phone}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-end">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </div>
+                      <div className="flex justify-start">
+                        <p className="text-gray-500 text-sm">
+                          Date: {new Date(order.date).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Orders Section - Hidden on mobile when an order is selected */}
-        <div className={`w-full lg:w-2/3 order-1 lg:order-2 ${selectedOrder ? 'hidden lg:block' : 'block'}`}>
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">All Orders</h2>
-          
-          {/* Mobile Card View - Only shown on small screens */}
-          <div className="lg:hidden">
-            {orders.length === 0 ? (
-              <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-                No orders found.
-              </div>
-            ) : (
-              orders.map(order => renderOrderCard(order))
-            )}
-          </div>
-          
-          {/* Desktop Table View - Only shown on large screens */}
-          <div className="hidden lg:block overflow-x-auto bg-white rounded-lg shadow">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <TableHeader text="Customer" />
-                  <TableHeader text="Total" />
-                  <TableHeader text="Delivery Fee" />
-                  <TableHeader text="Status" />
-                  <TableHeader text="Actions" />
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {orders.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="text-center py-8 text-gray-500">
-                      No orders found.
-                    </td>
-                  </tr>
-                ) : (
-                  orders.map(order => (
-                    <tr
-                      key={order._id}
-                      className={`hover:bg-gray-50 cursor-pointer ${selectedOrder?._id === order._id ? 'bg-blue-50' : ''}`}
-                      onClick={() => setSelectedOrder(order)}
-                    >
-                      <td className="px-6 py-4">{order.firstName} {order.lastName}</td>
-                      <td className="px-6 py-4">{order.total} DA</td>
-                      <td className="px-6 py-4">{order.deliveryFee} DA</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order.status)}`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 flex gap-2">
-                        <button
-                          onClick={(e) => handleDelete(e, order._id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+        <div>
+          {selectedOrder && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+              <OrderDetails order={selectedOrder} />
+              <OrderStatusChanger
+                order={selectedOrder}
+                notifyClient={notifyClient}
+                setNotifyClient={setNotifyClient}
+                handleChangeStatus={handleChangeStatus}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -270,14 +223,14 @@ const OrderDetails = ({ order }) => (
       <p><span className="font-medium">Address:</span> {order.street}</p>
       <p><span className="font-medium">Total:</span> {order.total} DA</p>
       <p><span className="font-medium">Delivery Fee:</span> {order.deliveryFee} DA</p>
+      <p><span className="font-medium">Order Date:</span> {new Date(order.date).toLocaleString()}</p>
     </div>
-
     <div className="mb-6">
-      <h3 className="text-lg font-medium text-gray-700 mb-2">Items:</h3>
+      <h3 className="text-lg font-medium mb-2">Items:</h3>
       <div className="space-y-3">
         {order.items.map((item, idx) => (
           <div key={idx} className="bg-gray-50 p-3 rounded-md">
-            <p className="text-sm font-medium text-gray-800">{item.name}</p>
+            <p className="text-sm font-medium">{item.name}</p>
             <div className="flex justify-between text-sm text-gray-600">
               <span>{item.quantity} × {item.price} DA</span>
               <span>Total: {item.total} DA</span>
@@ -321,21 +274,12 @@ const OrderStatusChanger = ({ order, notifyClient, setNotifyClient, handleChange
 
       <button
         onClick={(e) => handleChangeStatus(e, order._id, newStatus)}
-        className="w-full py-2 px-4 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+        className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
       >
         Update Status
       </button>
     </div>
   );
 };
-
-const TableHeader = ({ text }) => (
-  <th
-    scope="col"
-    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-  >
-    {text}
-  </th>
-);
 
 export default Orders;

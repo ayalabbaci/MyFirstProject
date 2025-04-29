@@ -78,7 +78,7 @@ const Header = ({ setShowLogin, isAdmin }) => {
     <>
       <li>
         <Link to="/orders" className=" flex p-2 ">
-          <img src={assets.bag_icon} alt="/orders" className="w-4 h-3 mr-2" />
+                  <img src={assets.bag_icon} alt="/orders" className="w-4 h-3 mr-2" />
           <p className="text-sm">Orders</p>
         </Link>
       </li>
