@@ -18,7 +18,9 @@ const Orders = () => {
 
   useEffect(() => {
     if (filterStatus === 'all') {
-      setFilteredOrders(orders.filter(order => order.status !== 'completed'));
+      setFilteredOrders(
+        orders.filter(order => order.status !== 'completed' && order.status !== 'canceled')
+      );
     } else if (filterStatus === 'history') {
       setFilteredOrders(orders.filter(order => order.status === 'completed'));
     } else {
@@ -94,7 +96,7 @@ const Orders = () => {
 
       setOrders(prev => {
         const updated = prev.map(order => order._id === orderId ? { ...order, status } : order);
-        if (status === 'completed' && filterStatus !== 'history') {
+        if ((status === 'completed' && filterStatus !== 'history') || (status === 'canceled' && filterStatus !== 'canceled')) {
           return updated.filter(order => order._id !== orderId);
         }
         return updated;

@@ -4,7 +4,12 @@ import mongoose from 'mongoose';
 const reviewSchema = new mongoose.Schema({
   restaurantId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Restaurant', // أو 'Food' إذا كان التقييم خاصًا بمنتج معين
+    ref: 'Restaurant',
+    required: true,
+  },
+  userId: { // ✅ ربط المراجعة بالمستخدم
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   rating: {

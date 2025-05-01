@@ -9,7 +9,10 @@ const authMiddleware = async (req, res, next) => {
 
     try {
         const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = { id: token_decode.id }; // إضافة الـ userId في req.user
+        req.user = { 
+            id: token_decode.id, 
+            role: token_decode.role || 'user' // ← نضيف الدور هنا، أو user بشكل افتراضي
+        };
         next(); // المتابعة للـ next middleware أو الـ route handler
     } catch (error) {
         console.log("❌ Token Error: ", error);
@@ -18,3 +21,4 @@ const authMiddleware = async (req, res, next) => {
 };
 
 export default authMiddleware;
+

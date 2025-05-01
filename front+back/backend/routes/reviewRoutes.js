@@ -1,13 +1,15 @@
-// routes/reviewRoutes.js
 import express from 'express';
-import { submitReview, getReviews } from '../controllers/reviewController.js';
+import { submitReview, getReviews, deleteReview } from '../controllers/reviewController.js';
 
 const rRouter = express.Router();
 
-// مسار إرسال التقييم
+// إرسال تقييم
 rRouter.post('/submit', submitReview);
 
-// مسار عرض التقييمات
+// عرض كل التقييمات
 rRouter.get('/list', getReviews);
+
+// حذف تقييم حسب ID (مخصص للأدمن فقط)
+rRouter.delete('/delete/:id', deleteReview);
 
 export default rRouter;

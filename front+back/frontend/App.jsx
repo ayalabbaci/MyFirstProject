@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './HomePage.jsx';
-import ClientApp from './src/client/ClientApp';
+
 import AdminApp from './src/admin/AdminApp';
 import Header from './src/client/component/header.jsx';
 import LoginPopop from './src/client/component/LoginPopPop/LoginPopop.jsx';
@@ -31,7 +31,7 @@ const App = () => {
       {/* الراوتس */}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/client/*" element={<ClientApp />} />
+      
         <Route path="/admin/*" element={<AdminApp />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/order" element={<PlaceOrder />} />

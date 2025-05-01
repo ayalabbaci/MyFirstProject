@@ -7,7 +7,7 @@ export const createOrder = async (req, res) => {
     const { firstName, lastName, phone, street, total, deliveryFee, supplements, items } = req.body;
     
     const newOrder = new Order({
-      userId: userIdFromToken, // استخدام الـ userId من التوكن
+      userId: userIdFromToken,
       firstName,
       lastName,
       phone,
@@ -29,7 +29,8 @@ export const createOrder = async (req, res) => {
 };
 
 // ✅ جلب جميع الطلبات
-export const getAllOrders = async (req, res) => {console.log("✅ getAllOrders function started");
+export const getAllOrders = async (req, res) => {
+  console.log("✅ getAllOrders function started");
   try {
     const orders = await Order.find();
     res.status(200).json({ success: true, orders });
@@ -42,27 +43,40 @@ export const getAllOrders = async (req, res) => {console.log("✅ getAllOrders f
 // ✅ جلب الطلبات بناءً على الـ userId
 export const getOrdersByUserId = async (req, res) => {
   try {
-    const userId = req.params.userId;  // الحصول على الـ userId من المسار
-    const orders = await Order.find({ userId });  // جلب الطلبات الخاصة بالمستخدم
-    res.status(200).json({ success: true, orders });  // إرسال الطلبات في الاستجابة
+    const userId = req.params.userId;
+    const orders = await Order.find({ userId });
+    res.status(200).json({ success: true, orders });
   } catch (error) {
     res.status(500).json({ success: false, message: "فشل في جلب الطلبات", error: error.message });
   }
 };
+
+// ✅ تحديث حالة الطلب (تم تعديله هنا)
 export const updateOrderStatus = async (req, res) => {
   try {
-    const orderId = req.params.orderId; // الحصول على orderId من المسار
-    const { status } = req.body; // استخراج الحالة الجديدة من البودي
+    const orderId = req.params.orderId;
+    const { status } = req.body;
+    const userIdFromToken = req.user.id;
+    const userRole = req.user.role; // تأكد أن الميدلوير يضيف الدور في التوكن
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true } // يرجع النسخة المحدّثة بعد التحديث
-    );
+    const order = await Order.findById(orderId);
 
-    if (!updatedOrder) {
+    if (!order) {
       return res.status(404).json({ success: false, message: "الطلب غير موجود" });
     }
+
+    // 🔒 السماح فقط للعميل الذي أنشأ الطلب أو الأدمن
+    if (userRole !== 'admin' && order.userId.toString() !== userIdFromToken) {
+      return res.status(403).json({ success: false, message: "ليس لديك صلاحية تعديل هذا الطلب" });
+    }
+
+    // ⛔️ منع التعديل إذا كانت الحالة مكتملة أو ملغاة
+    if (order.status === 'completed' || order.status === 'canceled') {
+      return res.status(400).json({ success: false, message: `لا يمكن تعديل الطلب وهو في حالة '${order.status}'` });
+    }
+
+    order.status = status;
+    const updatedOrder = await order.save();
 
     res.status(200).json({ success: true, message: "تم تحديث حالة الطلب بنجاح", order: updatedOrder });
   } catch (error) {
@@ -70,10 +84,10 @@ export const updateOrderStatus = async (req, res) => {
     res.status(500).json({ success: false, message: "فشل في تحديث حالة الطلب", error: error.message });
   }
 };
+
 export const deleteOrder = async (req, res) => {
   try {
-    const orderId = req.params.orderId; // الحصول على orderId من المسار
-
+    const orderId = req.params.orderId;
     const deletedOrder = await Order.findByIdAndDelete(orderId);
 
     if (!deletedOrder) {

@@ -1,23 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { jwtDecode } from "jwt-decode";
+import React, { useState } from 'react';
 import Content from './src/client/component/content/Content';
-import ExploreMenu from './src/client/component/Explore-menu/ExploreMenu';
 import FoodDisplay from './src/client/component/foodDisplay/FoodDisplay';
 import AppDownload from './src/client/component/AppDownload/AppDownload';
 import LoginPopop from './src/client/component/LoginPopPop/LoginPopop.jsx';
 import Footer from './src/client/component/Footer.jsx';
+import SubmitReviewModal from './src/client/component/Review/SubmitReview';
+import ExploreMenu from './src/client/component/Explore-menu/ExploreMenu';
+import './home.css';
+
+// استيراد أيقونة من lucide-react
+import { MessageCirclePlus } from 'lucide-react';
 
 const HomePage = ({ showLogin, setShowLogin }) => {
-  const [category, setCategory] = React.useState('All');
+  const [category, setCategory] = useState('All');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const restaurantId = "sampleRestaurantId"; // يمكنك تغييره لاحقًا حسب بياناتك
 
   return (
-    <div className='home'>
+    <div className="home relative">
       {showLogin && <LoginPopop setShowLogin={setShowLogin} />}
+
       <Content />
       <ExploreMenu category={category} setCategory={setCategory} />
       <FoodDisplay category={category} />
       <AppDownload />
       <Footer />
+
+      {showReviewModal && (
+        <SubmitReviewModal 
+          isOpen={showReviewModal} 
+          onClose={() => setShowReviewModal(false)} 
+          restaurantId={restaurantId} 
+        />
+      )}
+
+      {/* زر إضافة مراجعة بشكل أيقونة دائرية على الجانب الأيمن في المنتصف */}
+      <div className="fixed bottom-0 right-13 transform -translate-y-1/2 z-50">
+        <button
+          onClick={() => setShowReviewModal(true)}
+          title="Ajouter un avis"
+          className="bg-amber-700 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all flex items-center justify-center"
+        >
+          <MessageCirclePlus size={30} />
+        </button>
+      </div>
     </div>
   );
 };
