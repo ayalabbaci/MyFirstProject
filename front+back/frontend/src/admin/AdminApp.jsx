@@ -7,7 +7,7 @@ import Orders from './pages/Orders/Orders';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSpring, animated } from 'react-spring';
-
+import FeedbackList from './pages/FeedbackList';
 const AdminApp = () => {
   const url = "http://localhost:4000";
   
@@ -55,6 +55,7 @@ const AdminApp = () => {
           <Route path="add" element={<Add url={url} />} />
           <Route path="list" element={<List url={url} />} />
           <Route path="orders" element={<Orders url={url} />} />
+          <Route path="reviews" element={<FeedbackList url={url} />} />
         </Routes>
       </div>
     </div>

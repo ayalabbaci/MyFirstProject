@@ -3,21 +3,18 @@ import React, { useState } from 'react';
 const SearchQuestions = () => {
   const [showQuestions, setShowQuestions] = useState(false);
   const [showMap, setShowMap] = useState(false);
-  const [showSignatureDishes, setShowSignatureDishes] = useState(false);
   const [showWhyPizza, setShowWhyPizza] = useState(false);
   
   const toggleQuestions = () => {
     setShowQuestions(!showQuestions);
     // Close other dialogs if open
     if (showMap) setShowMap(false);
-    if (showSignatureDishes) setShowSignatureDishes(false);
     if (showWhyPizza) setShowWhyPizza(false);
   };
   
   const handleLocationClick = () => {
     setShowMap(true);
     setShowQuestions(false);
-    setShowSignatureDishes(false);
     setShowWhyPizza(false);
   };
   
@@ -27,12 +24,10 @@ const SearchQuestions = () => {
     setShowWhyPizza(true);
     setShowQuestions(false);
     setShowMap(false);
-    setShowSignatureDishes(false);
   };
   
   const closePopup = () => {
     setShowMap(false);
-    setShowSignatureDishes(false);
     setShowWhyPizza(false);
   };
   

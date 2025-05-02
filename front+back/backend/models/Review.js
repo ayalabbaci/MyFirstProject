@@ -3,8 +3,7 @@ import mongoose from 'mongoose';
 
 const reviewSchema = new mongoose.Schema({
   restaurantId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Restaurant',
+    type: String,
     required: true,
   },
   userId: { // ✅ ربط المراجعة بالمستخدم

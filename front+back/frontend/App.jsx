@@ -9,6 +9,7 @@ import './App.css';
 import Cart from './src/client/pages/Cart/Cart';
 import PlaceOrder from './src/client/pages/PlaceOrder/PlaceOrder.jsx';
 import Orders from './src/client/pages/Orders.jsx';
+import ReviewPage from './src/client/pages/ReviewPage.jsx';
 const App = () => {
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(false);
@@ -36,7 +37,7 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
-
+        <Route path="/reviews/:id" element={<ReviewPage/>} />
         {/* صفحة 404 */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>

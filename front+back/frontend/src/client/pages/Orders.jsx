@@ -84,12 +84,12 @@ const Orders = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-orange-600">My Orders</h1>
+    <div className="p-3 md:p-6 max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-orange-600">My Orders</h1>
         <button
           onClick={() => setShowHistory(!showHistory)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full sm:w-auto px-3 py-1 md:px-4 md:py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm md:text-base"
         >
           {showHistory ? 'Show Active Orders' : 'Show History'}
         </button>
@@ -98,19 +98,19 @@ const Orders = () => {
       {filteredOrders.length === 0 ? (
         <p className="text-gray-600">No orders to display.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-3 md:space-y-4">
           {filteredOrders.map((order, index) => (
-            <li key={index} className="bg-white shadow-md p-4 rounded-lg border">
-              <div className="flex justify-between items-center">
+            <li key={index} className="bg-white shadow-md p-3 rounded-lg border text-sm md:text-base">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center">
                 <div>
-                <p className="font-semibold text-lg text-red-800">
-  Order {index + 1} 
-</p>
-                  <p className="text-gray-500 text-sm">
+                  <p className="font-semibold text-base md:text-lg text-red-800">
+                    Order {index + 1} 
+                  </p>
+                  <p className="text-gray-500 text-xs md:text-sm">
                     Date: {new Date(order.date).toLocaleString()}
                   </p>
                 </div>
-                <span className={`font-semibold text-sm ${
+                <span className={`font-semibold text-xs md:text-sm mt-1 sm:mt-0 ${
                   order.status === 'pending' ? 'text-yellow-500' :
                   order.status === 'in-progress' ? 'text-blue-500' :
                   order.status === 'completed' ? 'text-green-600' :
@@ -122,14 +122,14 @@ const Orders = () => {
               </div>
 
               <button
-                className="text-sm text-blue-600 mt-2 underline"
+                className="text-xs md:text-sm text-blue-600 mt-2 underline"
                 onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)}
               >
                 {expandedOrderId === order._id ? 'Hide Details' : 'View Details'}
               </button>
 
               {expandedOrderId === order._id && (
-                <div className="mt-4">
+                <div className="mt-3 text-sm">
                   <p className="font-semibold">Customer:</p>
                   <p>{order.firstName} {order.lastName}</p>
 
@@ -137,10 +137,11 @@ const Orders = () => {
                   <p>{order.street}</p>
 
                   <p className="mt-2 font-semibold">Items:</p>
-                  <ul className="list-disc ml-5 text-gray-700">
+                  <ul className="list-disc ml-4 text-gray-700 text-xs md:text-sm">
                     {order.items.map((item, i) => (
-                      <li key={i}>
-                        {item.name} — Quantity: {item.quantity}, Price: {item.price} DA
+                      <li key={i} className="break-words pr-2">
+                        <span className="block">{item.name}</span>
+                        <span className="block text-gray-600">Quantity: {item.quantity}, Price: {item.price} DA</span>
                       </li>
                     ))}
                   </ul>
@@ -148,17 +149,17 @@ const Orders = () => {
                   {order.supplements?.length > 0 && (
                     <div className="mt-2">
                       <p className="font-semibold">Supplements:</p>
-                      <p>{order.supplements.join(", ")}</p>
+                      <p className="text-xs md:text-sm">{order.supplements.join(", ")}</p>
                     </div>
                   )}
 
-                  <p className="mt-2 text-gray-700">Delivery Fee: {order.deliveryFee} DA</p>
-                  <p className="text-gray-700 font-bold">Total: {order.total} DA</p>
+                  <p className="mt-2 text-gray-700 text-xs md:text-sm">Delivery Fee: {order.deliveryFee} DA</p>
+                  <p className="text-gray-700 font-bold text-sm md:text-base">Total: {order.total} DA</p>
 
                   {(order.status === 'pending' || order.status === 'in-progress') && (
                     <button
                       onClick={() => cancelOrder(order._id)}
-                      className="mt-3 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150"
+                      className="mt-3 w-full sm:w-auto px-3 py-1 md:px-4 md:py-2 bg-red-500 text-white text-xs md:text-sm rounded hover:bg-red-600 transition duration-150"
                     >
                       Cancel Order
                     </button>

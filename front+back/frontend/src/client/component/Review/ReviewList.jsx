@@ -11,7 +11,7 @@ const ReviewList = ({ restaurantId }) => {
         const response = await axios.get(`/api/reviews/list?restaurantId=${restaurantId}`);
         setReviews(response.data.data);
       } catch (error) {
-        console.error('Failed to fetch reviews:', error);
+   
       } finally {
         setLoading(false);
       }
