@@ -7,7 +7,7 @@ import { assets } from '../../assets/assets';
 const CartItem = ({ item, cartItems, addToCart, removeFromCart, handleRemoveClick,  }) => (
   <div key={item.id}>
     <div className="cart-items-title cart-items-item mt-2 text-black mb-2 grid grid-cols-[1fr_1fr_1fr_1.5fr_1fr_0.5fr] items-center text-[18px] font-normal">
-      <img className="w-12.5 h-12.5"  src={item.image} />
+      <img className="w-12.5 h-12.5"  src={`http://localhost:4000/images/${item.image}`} alt={item.name} />
      
       <p>{item.name}</p>
       <p>{item.price}</p>
@@ -22,7 +22,7 @@ const CartItem = ({ item, cartItems, addToCart, removeFromCart, handleRemoveClic
         
         <img
           className="w-6 h-6 cursor-pointer"
-          onClick={() => addToCart(itemId)}
+          onClick={() => addToCart(item._id)}
           src={assets.add_icon_green}
           alt="Add item"
         />

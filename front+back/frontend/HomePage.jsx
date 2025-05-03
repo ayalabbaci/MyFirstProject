@@ -25,7 +25,7 @@ const HomePage = ({ showLogin, setShowLogin }) => {
       <ExploreMenu category={category} setCategory={setCategory} />
       <FoodDisplay category={category} />
       <AppDownload />
-      <Footer />
+      <Footer className="footer"/>
 
       {showReviewModal && (
         <SubmitReviewModal 
@@ -36,11 +36,12 @@ const HomePage = ({ showLogin, setShowLogin }) => {
       )}
 
       {/* زر إضافة مراجعة بشكل أيقونة دائرية على الجانب الأيمن في الأسفل */}
-      <div className="fixed bottom-16 right-8 z-50">
+      <div className="fixed bottom-10 right-13 z-50">
         <button
           onClick={() => setShowReviewModal(true)}
           title="Ajouter un avis"
-          className="bg-amber-700 hover:bg-red-600 text-white p-4 rounded-full shadow-lg transition-all flex items-center justify-center"
+          className="bg-amber-700 hover:bg-red-600 text-white p-4
+           rounded-full shadow-lg transition-all flex items-center justify-center"
         >
           <MessageCirclePlus size={30} />
         </button>

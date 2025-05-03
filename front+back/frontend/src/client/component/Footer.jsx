@@ -3,7 +3,7 @@ import { assets } from '../assets/assets'
 import './Footer.css'
 const Footer = () => {
   return (
-    <div className='footer mt-15 text-amber-50 bg-black flex flex-col items-center gap-[20px] mx-8 px-[8vw] pt-[80px] pb-[80px]' id='footer'>
+    <div className='footer mt-15  text-amber-50  bg-black flex flex-col items-center gap-[20px]  px-[8vw] pt-[80px] pb-[80px]' id='footer'>
       <div className="footer-content w-full grid grid-cols-[2fr_1fr_1fr] gap-20">
         <div className="footer-content-left flex flex-col items-start gap-5">
 <p className=' font-bold text-amber-600 text-5xl '>
