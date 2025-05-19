@@ -36,7 +36,7 @@ const HomePage = ({ showLogin, setShowLogin }) => {
       )}
 
       {/* زر إضافة مراجعة بشكل أيقونة دائرية على الجانب الأيمن في الأسفل */}
-      <div className="fixed bottom-10 right-13 z-50">
+      <div className="fixed bottom-10 right-16 z-50">
         <button
           onClick={() => setShowReviewModal(true)}
           title="Ajouter un avis"

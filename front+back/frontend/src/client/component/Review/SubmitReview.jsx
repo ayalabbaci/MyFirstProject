@@ -3,32 +3,65 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import { Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { StoreContext } from '../../context/StoreContext'; // تأكد من المسار حسب مشروعك
+import { StoreContext } from '../../context/StoreContext';
+import Swal from 'sweetalert2';
 
 const SubmitReviewModal = ({ restaurantId, onSuccess, isOpen, onClose }) => {
-  const { userId } = useContext(StoreContext); // ✅ أخذ userId من الـ context
+  const { userId } = useContext(StoreContext);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ التحقق من تسجيل الدخول
+    if (!userId) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'You need to log in',
+        text: 'Please log in to submit a review.',
+        confirmButtonColor: '#ef4444'
+      });
+    }
+
+    // ✅ التحقق من وجود تقييم وتعليق
+    if (rating === 0 || comment.trim() === "") {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Incomplete review',
+        text: 'Please give a rating and write a comment before submitting.',
+        confirmButtonColor: '#ef4444'
+      });
+    }
+
     try {
       const reviewData = { restaurantId, userId, rating, comment };
-      console.log("Review Data:", reviewData);  // طباعة البيانات قبل إرسالها
       const response = await axios.post("/api/reviews/submit", reviewData);
-      console.log("Response:", response.data);  // طباعة الاستجابة من الخادم
-      alert("Review submitted successfully!");
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Thank you!',
+        text: 'Your review has been submitted.',
+        confirmButtonColor: '#ef4444'
+      });
+
       setRating(0);
       setComment("");
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error("Error submitting review:", err.response ? err.response.data : err);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: err.response?.data?.message || 'Something went wrong while submitting your review.',
+        confirmButtonColor: '#ef4444'
+      });
     }
   };
-  
-  
+
   if (!isOpen) return null;
 
   return (

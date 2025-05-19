@@ -17,6 +17,7 @@ const PlaceOrder = () => {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchAddressFromCoords = async (lat, lon) => {
@@ -109,11 +110,7 @@ const PlaceOrder = () => {
 
       if (response.data.success) {
         setShowConfirmModal(false);
-        navigate("/orders", {
-          state: {
-            successMessage: "✅ Your order has been successfully placed! Payment will be on delivery.",
-          },
-        });
+        setShowSuccessModal(true);
       } else {
         setShowConfirmModal(false);
         Swal.fire({
@@ -128,7 +125,7 @@ const PlaceOrder = () => {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'An error occurred while placing your order. Please try again.',
+        text: 'An error occurred while placing your order. Please creat account.',
       });
     } finally {
       setIsLoading(false);
@@ -226,7 +223,7 @@ const PlaceOrder = () => {
             </div>
 
             <button type="button" className="cart-total-button" onClick={handleProceedToCheckout}>
-              PROCEED TO CHECKOUT
+              Confirmer
             </button>
           </div>
         </div>
@@ -260,6 +257,31 @@ const PlaceOrder = () => {
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Confirm Order"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <div className="confirm-modal-header">
+              <h3>🎉 Commande Réussie</h3>
+            </div>
+            <div className="confirm-modal-body">
+              <p>Votre commande a été passée avec succès.</p>
+              <p>Le paiement se fera à la livraison.</p>
+            </div>
+            <div className="confirm-modal-footer">
+              <button
+                className="confirm-button"
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  navigate("/");
+                }}
+              >
+                OK
               </button>
             </div>
           </div>

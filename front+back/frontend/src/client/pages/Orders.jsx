@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useContext, useState, useEffect } from 'react';
 import { StoreContext } from '../context/StoreContext';
 import { TailSpin } from 'react-loader-spinner';
+import Swal from 'sweetalert2';
 
 const Orders = () => {
   const { userId, token } = useContext(StoreContext);
@@ -31,7 +32,6 @@ const Orders = () => {
         } else {
           setError("Failed to fetch orders.");
         }
-
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
@@ -46,8 +46,17 @@ const Orders = () => {
   }, [userId, token]);
 
   const cancelOrder = async (orderId) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
-    if (!confirmCancel) return;
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to cancel this order?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, cancel it!',
+    });
+
+    if (!confirmResult.isConfirmed) return;
 
     try {
       await axios.put(
@@ -61,9 +70,11 @@ const Orders = () => {
           order._id === orderId ? { ...order, status: 'canceled' } : order
         )
       );
+
+      Swal.fire('Canceled!', 'Your order has been canceled.', 'success');
     } catch (error) {
       console.error("Error cancelling order:", error);
-      alert("Something went wrong while canceling the order.");
+      Swal.fire('Error', 'Something went wrong while canceling the order.', 'error');
     }
   };
 
@@ -104,7 +115,7 @@ const Orders = () => {
               <div className="flex flex-col sm:flex-row justify-between sm:items-center">
                 <div>
                   <p className="font-semibold text-base md:text-lg text-red-800">
-                    Order {index + 1} 
+                    Order {index + 1}
                   </p>
                   <p className="text-gray-500 text-xs md:text-sm">
                     Date: {new Date(order.date).toLocaleString()}
